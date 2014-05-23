@@ -1,0 +1,7 @@
+KNOWN DEPENDENCIES:
+
+
+Python 2.7
+Scrapy
+Twisted(Latest version)
+service_identity
