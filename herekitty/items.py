@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Define here the models for your scraped items
 #
 # See documentation in:
@@ -7,12 +8,13 @@ from scrapy.item import Item, Field
 
 class Pet(Item):
     species = Field()
-    ID = Field()
+    pet_ID = Field()
+    name = Field()
     gender = Field()
+    fixed = Field()
     color = Field()
     breed = Field()
-    age_years = Field()
-    age_months = Field()
-    age_days = Field()
-    found = Field()
-    location = Field()
+    shelter_name = Field()
+    found_on = Field()
+    scraped_at = Field()
+    status = Field()
