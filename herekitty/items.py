@@ -8,7 +8,7 @@ from scrapy.item import Item, Field
 
 class Pet(Item):
     species = Field()
-    pet_ID = Field()
+    pet_id = Field()
     name = Field()
     gender = Field()
     fixed = Field()
