@@ -6,7 +6,8 @@ BASE_URL = "http://www.petharbor.com/results.asp?"
 SCRAPE_CATEGORIES = ['pet_id', 'gender', 'color', 'breed',
               'age_years', 'age_months', 'age_days', 'found_on', 'shelter_name']
 DISCARDED_CATEGORIES = ['age_years', 'age_months', 'age_days']
-SPECIAL_CATEGORIES = ['gender', 'pet_id', 'shelter_name', 'found_on']
+SPECIAL_CATEGORIES = ['gender', 'pet_id', 'shelter_name', 'found_on', 'color']
+
 
 def parse_ID(entry):
     if u"(" in entry:
@@ -16,9 +17,9 @@ def parse_ID(entry):
 
 def parse_gender(entry):
     if u"(" in entry:
-        return [{"category": u"gender", "value": entry.split(u"(")[0].replace(u" ", u"")}, {"category": u"fixed", "value": 'true'}]
+        return [{"category": u"gender", "value": entry.split(u"(")[0].replace(u" ", u"").lower()}, {"category": u"fixed", "value": 'true'}]
     else:
-        return [{"category": u"gender", "value": entry}, {"category": u"fixed", "value": 'false'}]
+        return [{"category": u"gender", "value": entry.lower()}, {"category": u"fixed", "value": 'false'}]
 
 def parse_foundon(entry):
     if u"Reported On " in entry:
@@ -32,18 +33,18 @@ def parse_shelter(entry):
     else:
         return [{"category": u"shelter_name", "value": entry}]
 
+def parse_color(entry):
+    return [{"category": u"color", "value": entry.lower()}]
 
 SPECIAL_FUNCTIONS = {
     "pet_id": parse_ID,
     "gender": parse_gender,
     "found_on": parse_foundon,
-    "shelter_name": parse_shelter
+    "shelter_name": parse_shelter,
+    "color": parse_color
 }
 
-
-#only "atype", "where", "searchtype" values (and possibly "shelterlist") should ever change, AFAIK
-DEFAULT_PARAMS = {
-            #"searchtype": "ADOPT",
+PARAM_CONSTANTS = {
             "friends": "1",
             "samaritans": "1",
             "nosuccess": "0",
@@ -51,20 +52,18 @@ DEFAULT_PARAMS = {
             "imght": "120",
             "imgres": "thumb",
             "shelterlist": ["%27ASTN%27"], #, "%27GRGT%27"],
-            #"atype": "cat",
             "page": "1",
-            #"where": ["type_CAT"],
             "view": "sysadm.v_animal",
             "orderby":"Brought%20To%20The%20Shelter"
 }
 
 QUERIES = [
+    {"searchtype": "ADOPT", "atype": "other", "where": ["type_OTHER"]},
+    {"searchtype": "LOST", "atype": "other", "where": ["type_OTHER"]},
     {"searchtype": "ADOPT", "atype": "cat", "where": ["type_CAT"]},
     {"searchtype": "ADOPT", "atype": "dog", "where": ["type_DOG"]},
-    {"searchtype": "ADOPT", "atype": "other", "where": ["type_OTHER"]},
     {"searchtype": "LOST", "atype": "cat", "where": ["type_CAT"]},
-    {"searchtype": "LOST", "atype": "dog", "where": ["type_DOG"]},
-    {"searchtype": "LOST", "atype": "other", "where": ["type_OTHER"]},
+    {"searchtype": "LOST", "atype": "dog", "where": ["type_DOG"]}
 ]
 
 
@@ -75,8 +74,9 @@ class Query:
     def query_list(self):
         query_list = []
         for query in self.queries:
-            params = dict(query.items() + DEFAULT_PARAMS.items())
+            params = dict(query.items() + PARAM_CONSTANTS.items())
             query_list.append((self.generate_URL(params), query))
+        print "QUERY LIST:", query_list
         return query_list
 
     def generate_URL(self, parameters):
@@ -96,8 +96,3 @@ class Query:
         return request
 
 QUERY = Query(QUERIES)
-
-
-
-# update
-# reconcile

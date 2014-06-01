@@ -1,24 +1,19 @@
-__author__ = 'wgest'
 
 import requests
 import json
-import urllib2
-
 
 def update_pets():
     fin = open('../spider_data.json')
     url = 'http://pure-retreat-7270.herokuapp.com/populator/update'
     headers = {'content-type': 'application/json'}
-    #payload = "{\"pets\":{\"0\":" + fin.read().replace("[", "").replace("]", "") + "}}"
-    payload = fin.read().replace("[", "").replace("]", "")
-    new_payload = ""
-    for i, entry in enumerate(payload.split("}")):
-        res = entry.replace("{", "\"%s\":{" % str(i)) + "}"
-        new_payload += res
-
-    new_payload = "{\"pets\":{" + new_payload + "}"
-    print new_payload
-    response = requests.post(url, data=new_payload, headers=headers)
+    pets_dict = {}
+    index_dict = {}
+    pets = json.load(fin)
+    for i, pet in enumerate(pets):
+        index_dict[str(i)] = pet
+    pets_dict["pets"] = index_dict
+    print json.dumps(pets_dict)
+    response = requests.post(url, data=json.dumps(pets_dict), headers=headers)
     print response
 
 def reconcile_pets():
@@ -30,19 +25,31 @@ def reconcile_pets():
     for pet in all_pets:
         all_ids.append(pet["pet_id"])
 
-    new_payload = ""
-    for i, entry in enumerate(all_ids):
-        new_payload += "\"%s\":\"%s\"," % (str(i), entry)
-    new_payload = new_payload[:-1]
-    new_payload = "{\"pet_ids\":{" + new_payload + "}}"
+    ids_dict = {}
+    index_dict = {}
+    for i, id in enumerate(all_ids):
+        index_dict[str(i)] = id
+    ids_dict["pet_ids"] = index_dict
+    print json.dumps(ids_dict)
+    response = requests.post(url, data=json.dumps(ids_dict), headers=headers)
+    print response
 
-    print new_payload
-    response = requests.post(url, data=new_payload, headers=headers)
+def erase_db():
+    url = 'http://pure-retreat-7270.herokuapp.com/populator/reconcile'
+    headers = {'content-type': 'application/json'}
+
+    ids_dict = {}
+    index_dict = {}
+
+    ids_dict["pet_ids"] = index_dict
+    print json.dumps(ids_dict)
+    response = requests.post(url, data=json.dumps(ids_dict), headers=headers)
     print response
 
 def main():
     update_pets()
     reconcile_pets()
+    #erase_db()
 
-if __name__ == "main":
+if __name__ == "__main__":
     main()
