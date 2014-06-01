@@ -31,7 +31,7 @@ class PetSpider(Spider):
         self.loaded_models = []
         self.scraped_at = unicode(time.strftime("%Y-%m-%d %H:%M:%S"))
         try:
-            os.remove('../../spider_data.json')
+            os.remove('spider_data.json')
         except:
             pass
 
@@ -100,3 +100,4 @@ class PetSpider(Spider):
                 if loadeditem.get("pet_id") != " ":
                     self.loaded_models.append(loadeditem)
             return self.loaded_models
+
