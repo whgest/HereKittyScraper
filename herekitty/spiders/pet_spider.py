@@ -17,9 +17,8 @@ class PetSpider(Spider):
             self.start_urls.append(query[0])
         #self.start_urls = config.QUERY.query_list()
         self.query_count = 0
-        self.lost_database = []
-        self.adopt_database = []
         self.final_database = []
+        self.final_final_database = []
         self.scrapedat = unicode(time.strftime("%Y-%m-%d %H:%M:%S"))
 
     def parse(self, response):
@@ -72,6 +71,14 @@ class PetSpider(Spider):
         self.query_count += 1
 
         if self.query_count == 6:
-            return self.final_database
+            id_dupes = []
+            for pet in self.final_database:
+                if pet.get("pet_id") in id_dupes:
+                    pass
+                else:
+                    self.final_final_database.append(pet)
+                    id_dupes.append(pet.get("pet_id"))
+
+            return self.final_final_database
 
 

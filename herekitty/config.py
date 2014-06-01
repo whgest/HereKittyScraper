@@ -98,8 +98,6 @@ class Query:
 QUERY = Query(QUERIES)
 
 
-def post_pets():
-    pass
 
 # update
 # reconcile
